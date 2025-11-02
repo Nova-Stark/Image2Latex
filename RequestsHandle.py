@@ -15,9 +15,9 @@ routes_bp = Blueprint('routes',__name__)
 
 INFO = bool(os.getenv("INFO"))
 ZMQ_WORKER_ADDRESS = "tcp://127.0.0.1:5555"
+ZMQ_FRONTEND_ADDRESS = "tcp://127.0.0.1:5555"
 
-context = zmq.Context()
-push_socket = context.socket(zmq.PUSH)
+context = zmq.Context.instance()
         
 @routes_bp.route("/images/uploadfile/", methods=["POST"])
 def upload_image():
@@ -52,9 +52,19 @@ def upload_image():
             "data": base64.b64encode(image_bytes).decode('utf-8')
         }
         
-        
-        push_socket.connect(ZMQ_WORKER_ADDRESS)
-        push_socket.send_json(payload)
+
+        push_socket = None
+        try:
+            push_socket = context.socket(zmq.PUSH)
+            push_socket.connect(ZMQ_FRONTEND_ADDRESS)
+            push_socket.send_json(payload)
+        except Exception as zmq_e:
+            print(f"[ERROR] Failed to send to ZMQ proxy: {zmq_e}")
+            abort(500, description="Failed to queue task.")
+        finally:
+            # Always close the short-lived socket
+            if push_socket:
+                push_socket.close()
         
         
         r_con:sredis.Redis = current_app.config['REDIS_CONNECTION']

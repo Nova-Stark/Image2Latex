@@ -1,12 +1,13 @@
 import redis as sredis 
 import redis.exceptions 
-from worker import worker 
+from worker import worker ,proxy_steerer
 from multiprocessing import Process
 from flask import Flask, jsonify
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from RequestsHandle import routes_bp
+import zmq
 
 load_dotenv()
 
@@ -62,11 +63,12 @@ def root():
 if __name__=="__main__":
 
     print(f"[INFO] Starting {NUM_WORKERS} worker processes...")
-    worker_processes = [Process(target=worker, daemon=True) for _ in range(NUM_WORKERS)]
+    worker_processes =[Process(target=proxy_steerer, daemon=True)]+[Process(target=worker, daemon=True) for _ in range(NUM_WORKERS)]
     
     try:
         for p in worker_processes:
             p.start()
+            print(p.pid," Started")
         print(f"[INFO] {NUM_WORKERS} worker processes started.")
         
         # gunicorn -w 4 -b 0.0.0.0:8000 flask_main:app
@@ -80,6 +82,7 @@ if __name__=="__main__":
         print("\n\nShutting Down from Keyboard Interrupt...")
     finally:
         print("Terminating worker processes...")
+        zmq.Context.instance().term()
         for p in worker_processes:
             if p.is_alive():
                 p.terminate()

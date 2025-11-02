@@ -2,6 +2,7 @@ import requests
 import time
 import os
 from PIL import Image, ImageDraw, ImageFont
+from time import perf_counter
 
 # --- Server Configuration ---
 BASE_URL = "http://localhost:8000"
@@ -73,7 +74,7 @@ def run_test():
     result_url = f"{RESULT_URL_BASE}{task_id}"
     print(f"Polling for result at {result_url}...")
     
-    for i in range(60): # Poll for 60 seconds max
+    for i in range(120): # Poll for 120 seconds max
         try:
             time.sleep(1)
             response = requests.get(result_url, timeout=5)
@@ -108,14 +109,17 @@ def run_test():
             return
             
     print("\n--- TEST FAILED (Timeout) ---")
-    print("Gave up after 15 seconds. The result was still pending.")
+    print("Gave up after 120 seconds. The result was still pending.")
     print("-----------------------------")
 
 
 if __name__ == "__main__":
     from threading import Thread
     t = [Thread(target=run_test) for i in range(100)]
+    start = perf_counter()
     for i in t:
         i.start()
     for i in t:
         i.join()
+        
+    print("\n\n",perf_counter()-start," seconds taken.")
