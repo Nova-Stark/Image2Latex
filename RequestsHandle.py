@@ -14,8 +14,9 @@ load_dotenv()
 routes_bp = Blueprint('routes',__name__)
 
 INFO = bool(os.getenv("INFO"))
-ZMQ_WORKER_ADDRESS = "tcp://127.0.0.1:5555"
-ZMQ_FRONTEND_ADDRESS = "tcp://127.0.0.1:5555"
+ZMQ_WORKER_ADDRESS = os.getenv("ZMQ_WORKER_ADDRESS")
+ZMQ_FRONTEND_ADDRESS = os.getenv("ZMQ_FRONTEND_ADDRESS")
+
 
 context = zmq.Context.instance()
         

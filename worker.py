@@ -11,13 +11,12 @@ from multiprocessing import current_process
 load_dotenv()
 
 
-NUM_WORKERS = int(os.getenv("NUM_WORKERS"),1)#type:ignore
 INFO = bool(os.getenv("INFO"))
-ZMQ_WORKER_ADDRESS = "tcp://127.0.0.1:5555"
+ZMQ_WORKER_ADDRESS = os.getenv("ZMQ_WORKER_ADDRESS")
 
 # Define two separate addresses for the proxy
-ZMQ_FRONTEND_ADDRESS = "tcp://127.0.0.1:5555" # For Flask
-ZMQ_BACKEND_ADDRESS = "tcp://127.0.0.1:5556"  # For Workers
+ZMQ_FRONTEND_ADDRESS =os.getenv("ZMQ_FRONTEND_ADDRESS") # For Flask
+ZMQ_BACKEND_ADDRESS = os.getenv("ZMQ_BACKEND_ADDRESS")  # For Workers
 
 def proxy_steerer():
     """
@@ -30,11 +29,11 @@ def proxy_steerer():
     try:
         # Socket for Flask apps to PUSH to
         frontend = context.socket(zmq.PULL)
-        frontend.bind(ZMQ_FRONTEND_ADDRESS)
+        frontend.bind(ZMQ_FRONTEND_ADDRESS)#type:ignore
         
         # Socket for Workers to PULL from
         backend = context.socket(zmq.PUSH)
-        backend.bind(ZMQ_BACKEND_ADDRESS)
+        backend.bind(ZMQ_BACKEND_ADDRESS)#type:ignore
 
         if INFO:
             print(f"[INFO] ZMQ Proxy started. Frontend: {ZMQ_FRONTEND_ADDRESS}, Backend: {ZMQ_BACKEND_ADDRESS}")
