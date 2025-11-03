@@ -71,7 +71,7 @@ if __name__=="__main__":
             print(p.pid," Started")
         print(f"[INFO] {NUM_WORKERS} worker processes started.")
         
-        # gunicorn -w 4 -b 0.0.0.0:8000 flask_main:app
+        # gunicorn -w 4 -b 0.0.0.0:8000 app:app
         app.run(
             host="0.0.0.0",
             port=8000,

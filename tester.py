@@ -115,7 +115,7 @@ def run_test():
 
 if __name__ == "__main__":
     from threading import Thread
-    t = [Thread(target=run_test) for i in range(100)]
+    t = [Thread(target=run_test) for i in range(10)]
     start = perf_counter()
     for i in t:
         i.start()
