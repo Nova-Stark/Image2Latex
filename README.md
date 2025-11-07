@@ -58,6 +58,8 @@ Make sure your Redis server is running. Then, start the main server:
 
 Inside virtual environment 
 run `python main.py`
+For Production use :
+`./start` after giving required permissions
 
 
 This single command starts:

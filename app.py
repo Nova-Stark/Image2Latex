@@ -60,11 +60,10 @@ def root():
     })
     
     
-if __name__=="__main__":
-
+"""if __name__=="__main__":
     print(f"[INFO] Starting {NUM_WORKERS} worker processes...")
     worker_processes =[Process(target=proxy_steerer, daemon=True)]+[Process(target=worker, daemon=True) for _ in range(NUM_WORKERS)]
-    
+
     try:
         for p in worker_processes:
             p.start()
@@ -94,3 +93,4 @@ if __name__=="__main__":
         
         print("Flask server shut down.")
 
+"""
